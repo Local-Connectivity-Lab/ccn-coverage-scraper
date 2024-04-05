@@ -11,7 +11,7 @@ import time
 import urllib.parse
 app = FastAPI()
 @app.get("/")
-async def scrape_website(state: str, cityname: str, primary: str, street_number: str, st: str, post_direction: str, zip_5: str):
+async def scrape_website(state: str, cityname: str, primary: str, street_number: str, st: str, post_direction: str, zip_5: str, zip_9: str):
     try:
         chrome_options = Options()
         #chrome_options.add_argument('--headless')
@@ -27,16 +27,16 @@ async def scrape_website(state: str, cityname: str, primary: str, street_number:
         post_direction = 'N'
         zip_5 = '22201'
         '''
-        #this is the url you type into chrome: http://127.0.0.1:8000/scrape/?url=https://www.allconnect.com&state=va&cityname=arlington&primary=3109&street_number=9th&st=St&post_direction=N&zip_5=22201
+        #this is the url you type into chrome: http://127.0.0.1:8000/?url=https://www.allconnect.com&state=va&cityname=arlington&primary=3109&street_number=9th&st=St&post_direction=N&zip_5=22201&zip_9=2024
 
         #these variables can be made from previous variable being mashed together
         state_cap = str.upper(state)
         cityname_cap = str.capitalize(cityname)
         street_name = f'{primary}%20{street_number}%20{st}%20{post_direction}'
-        zip_9 = f'{zip_5}-2024'
+        zip_95 = f'{zip_5}-{zip_9}'
 
         #now everything gets packaged toghether
-        alconnect_url = f"https://www.allconnect.com/local/{state}/{cityname}?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&point=%7B%22latitude%22%3A38.883003%2C%22longitude%22%3A-77.095169%7D&state={state_cap}&zip9={zip_9}&zip5={zip_5}&zip9or5={zip_9}&prettyAddress=3109%209th%20St%20N%2C%20Arlington%2C%20VA%2022201-2024&zip={zip_9}"
+        alconnect_url = f"https://www.allconnect.com/local/{state}/{cityname}?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&state={state_cap}&zip9={zip_95}&zip5={zip_5}&zip9or5={zip_95}&prettyAddress={primary}%20{street_number}%20{st}%20{post_direction}%2C%20{cityname_cap}%2C%20{state_cap}%20{zip_95}&zip={zip_95}"
         print(alconnect_url)
 
         #selenium starts up and gets driver page source
