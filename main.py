@@ -11,26 +11,35 @@ import time
 import urllib.parse
 app = FastAPI()
 @app.get("/scrape/")
-async def scrape_website(url: str):
+async def scrape_website(url: str, state: str, cityname: str, primary: str, street_number: str, st: str, post_direction: str, zip_5: str):
     try:
-        print(url)
         chrome_options = Options()
         #chrome_options.add_argument('--headless')
         driver = webdriver.Chrome(options=chrome_options)
+
+        #this is all of the parameters that are being used to test the url
+        ''' 
         state = 'va'
-        state_cap = str.upper(state)
         cityname= 'arlington'
-        cityname_cap = str.capitalize(cityname)
         primary = '3109'
         street_number = '9th'
         st = "St"
         post_direction = 'N'
-        street_name = f'{primary}%20{street_number}%20{st}%20{post_direction}'
         zip_5 = '22201'
+        '''
+        #this is the url you type into chrome: http://127.0.0.1:8000/scrape/?url=https://www.allconnect.com&state=va&cityname=arlington&primary=3109&street_number=9th&st=St&post_direction=N&zip_5=22201
+
+        #these variables can be made from previous variable being mashed together
+        state_cap = str.upper(state)
+        cityname_cap = str.capitalize(cityname)
+        street_name = f'{primary}%20{street_number}%20{st}%20{post_direction}'
         zip_9 = f'{zip_5}-2024'
 
+        #now everything gets packaged toghether
         alconnect_url = f"https://www.allconnect.com/local/{state}/{cityname}?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&point=%7B%22latitude%22%3A38.883003%2C%22longitude%22%3A-77.095169%7D&state={state_cap}&zip9={zip_9}&zip5={zip_5}&zip9or5={zip_9}&prettyAddress=3109%209th%20St%20N%2C%20Arlington%2C%20VA%2022201-2024&zip={zip_9}"
         print(alconnect_url)
+
+        #selenium starts up and gets driver page source
         driver.get(alconnect_url)
         time.sleep(5)
         '''
@@ -48,6 +57,8 @@ async def scrape_website(url: str):
         response.raise_for_status()
         html_text = response.text
         """
+
+        #beautiful soup finds the relevant data
         soup = BeautifulSoup(html_text, 'lxml')
         Li_elements = soup.find_all('li', class_='mb-16 last:mb-0')
         scraped_data = [li.text for li in Li_elements]
