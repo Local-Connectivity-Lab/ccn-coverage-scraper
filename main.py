@@ -60,9 +60,30 @@ async def scrape_website(state: str, cityname: str, primary: str, street_number:
 
         #beautiful soup finds the relevant data
         soup = BeautifulSoup(html_text, 'lxml')
-        Li_elements = soup.find_all('li', class_='mb-16 last:mb-0')
-        scraped_data = [li.text for li in Li_elements]
-        return {"here you go": scraped_data}
+        li_elements = soup.find_all('li', class_='mb-16 last:mb-0')
+        scrap_data = '\n'.join([li.text for li in li_elements])
+
+        wifi_providers = {}
+
+        # Extracting information for each provider and adding it to the dictionary
+        for li in li_elements:
+            provider_name = li.find('span', class_='text-10 leading-10 md:ml-16 lg:ml-0 lg:mb-8').text
+            print(provider_name)
+            provider_details = {}
+
+            provider_speed = li.find(
+                class_='product__info-box relative border-b border-solid border-gray-bg-dark px-16 py-10 md:p-16 md:flex md:justify-between md:pr-0 md:pl-16 md:py-0 lg:pl-24 lg:py-24 items-start md:w-1/2 lg:w-1/4').text
+            speedQ, speedV = 'Available speeds', provider_speed[16:]
+            provider_details[speedQ] = speedV
+
+            provider_price = li.find(class_='text-gray-steel text-24 md:text-18 lg:text-28 leading-28 m-0').text
+            priceQ, priceV = 'Starting at', provider_price
+            provider_details[priceQ] = priceV
+
+            wifi_providers[provider_name] = provider_details
+
+        # Printing the dictionary
+        return{"here you go": wifi_providers}
     except requests.RequestException as e:
         raise HTTPException(status_code=500, detail="Failed to fetch URL") from e
     except Exception as e:
