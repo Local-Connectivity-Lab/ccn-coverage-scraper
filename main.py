@@ -18,7 +18,9 @@ async def scrape_website(url: str):
         #chrome_options.add_argument('--headless')
         driver = webdriver.Chrome(options=chrome_options)
         state = 'va'
+        state_cap = str.upper(state)
         cityname= 'arlington'
+        cityname_cap = str.capitalize(cityname)
         primary = '3109'
         street_number = '9th'
         st = "St"
@@ -27,8 +29,8 @@ async def scrape_website(url: str):
         zip_5 = '22201'
         zip_9 = f'{zip_5}-2024'
 
-        alconnect_url = f"https://www.allconnect.com/local/{state}/{cityname}?city={cityname}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&point=%7B%22latitude%22%3A38.883003%2C%22longitude%22%3A-77.095169%7D&state={state}&zip9={zip_9}&zip5={zip_5}&zip9or5={zip_9}&prettyAddress=3109%209th%20St%20N%2C%20Arlington%2C%20VA%2022201-2024&zip={zip_9}"
-
+        alconnect_url = f"https://www.allconnect.com/local/{state}/{cityname}?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&point=%7B%22latitude%22%3A38.883003%2C%22longitude%22%3A-77.095169%7D&state={state_cap}&zip9={zip_9}&zip5={zip_5}&zip9or5={zip_9}&prettyAddress=3109%209th%20St%20N%2C%20Arlington%2C%20VA%2022201-2024&zip={zip_9}"
+        print(alconnect_url)
         driver.get(alconnect_url)
         time.sleep(5)
         '''
