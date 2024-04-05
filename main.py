@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import By
 import time
 import urllib.parse
 app = FastAPI()
-@app.get("/scrape/")
+@app.get("/")
 async def scrape_website(url: str, state: str, cityname: str, primary: str, street_number: str, st: str, post_direction: str, zip_5: str):
     try:
         chrome_options = Options()
