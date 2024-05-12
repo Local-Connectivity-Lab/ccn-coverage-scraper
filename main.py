@@ -8,25 +8,32 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 import time
-import urllib.parse
 app = FastAPI()
 
-Max_Retry = 2
-
 @app.get("/")
-async def scrape_website(state: str, cityname: str, primary: str, street_number: str, st: str, post_direction: str, zip_5: str, zip_9: str):
-    Retry_count= 0
+def scrape_website(state: str, cityname: str, primary: str, street_number: str, st: str, post_direction: str, zip_5: str, zip_9: str):
+
     # these variables can be made from previous variable being mashed together
     state_cap = str.upper(state)
     cityname_cap = str.capitalize(cityname)
     street_name = f'{primary}%20{street_number}%20{st}%20{post_direction}'
     zip_95 = f'{zip_5}-{zip_9}'
 
-    # now everything gets packaged toghether
+    # now everything gets packaged together
     alconnect_url = f"https://www.allconnect.com/local/{state}/{cityname}?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&state={state_cap}&zip9={zip_95}&zip5={zip_5}&zip9or5={zip_95}&prettyAddress={primary}%20{street_number}%20{st}%20{post_direction}%2C%20{cityname_cap}%2C%20{state_cap}%20{zip_95}&zip={zip_95}"
-    print(alconnect_url)
-    while Retry_count < Max_Retry:
-        try:
+    print("stage 1", alconnect_url)
+    wifi_providers = get_plans(alconnect_url)
+    print(wifi_providers)
+    if not wifi_providers or len(wifi_providers) == 0:
+        # Modify alconnect_url for the next attempt
+        alconnect_url = f"https://www.allconnect.com/results/providers?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&state={state_cap}&zip9={zip_95}&zip5={zip_5}&zip9or5={zip_95}&prettyAddress={primary}%20{street_number}%20{st}%20{post_direction}%2C%20{cityname_cap}%2C%20{state_cap}%20{zip_95}&zip={zip_95}"
+        print("stage 2", alconnect_url)
+        wifi_providers = get_plans(alconnect_url)
+    return wifi_providers
+def get_plans(alconnect_url: str) -> dict:
+    # now everything gets packaged toghether
+    wifi_providers = {}
+    try:
             chrome_options = Options()
             #chrome_options.add_argument('--headless')
             driver = webdriver.Chrome(options=chrome_options)
@@ -55,13 +62,10 @@ async def scrape_website(state: str, cityname: str, primary: str, street_number:
                 print("Timed out waiting for element")
             '''
             html_text = driver.page_source
-
             #beautiful soup finds the relevant data
             soup = BeautifulSoup(html_text, 'lxml')
             li_elements = soup.find_all('li', class_='mb-16 last:mb-0')
             scrap_data = '\n'.join([li.text for li in li_elements])
-
-            wifi_providers = {}
 
             # Extracting information for each provider and adding it to the dictionary
             for li in li_elements:
@@ -80,26 +84,14 @@ async def scrape_website(state: str, cityname: str, primary: str, street_number:
 
                 wifi_providers[provider_name] = provider_details
             # Check if wifi_providers is empty
-            if not wifi_providers:
-                Retry_count += 1
-                print(f"Retry {Retry_count}...")
-                # Modify alconnect_url for the next attempt
-                alconnect_url = f"https://www.allconnect.com/results/providers?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&state={state_cap}&zip9={zip_95}&zip5={zip_5}&zip9or5={zip_95}&prettyAddress={primary}%20{street_number}%20{st}%20{post_direction}%2C%20{cityname_cap}%2C%20{state_cap}%20{zip_95}&zip={zip_95}"
-                print(alconnect_url)
-                continue
-
-            # If wifi_providers is not empty, break out of the loop and return the data
-            break
 
         # Printing the dictionary
-        except requests.RequestException as e:
-            raise HTTPException(status_code=500, detail="Failed to fetch URL") from e
-        except Exception as e:
-            raise HTTPException(status_code=500, detail="Failed to scrape website") from e
-        finally:
-            driver.quit()
-
-    if Retry_count == Max_Retry and not wifi_providers:
-        return {"message": "No wifi providers found after retries"}
-
-    return{"here you go": wifi_providers}
+    except requests.RequestException as e:
+        print(e, "1")
+        raise HTTPException(status_code=500, detail="Failed to fetch URL") from e
+    except Exception as e:
+        print(e, "2")
+        raise HTTPException(status_code=500, detail="Failed to scrape website") from e
+    finally:
+        driver.quit()
+    return wifi_providers

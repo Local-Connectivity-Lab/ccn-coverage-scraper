@@ -1,5 +1,8 @@
-# Test your FastAPI endpoints
-
-GET http://127.0.0.1:8000/
+GET http://127.0.0.1:8000/?state=TX&cityname=Fort%20Cavazos&primary=890109&street_number=Clarke&st=Rd&post_direction=%20&zip_5=76544&zip_9=5038
 Accept: application/json
 
+###
+# Test your FastAPI endpoints
+
+GET http://127.0.0.1:8000/?state=va&cityname=arlington&primary=3109&street_number=9th&st=St&post_direction=N&zip_5=22201&zip_9=2024
+Accept: application/json
