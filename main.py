@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -12,6 +13,20 @@ import urllib.parse
 app = FastAPI()
 
 Max_Retry = 2
+
+
+origins = [
+    "*",
+
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def scrape_website(state: str, cityname: str, primary: str, street_number: str, st: str, post_direction: str, zip_5: str, zip_9: str):
@@ -71,7 +86,7 @@ async def scrape_website(state: str, cityname: str, primary: str, street_number:
 
                 provider_speed = li.find(
                     class_='product__info-box relative border-b border-solid border-gray-bg-dark px-16 py-10 md:p-16 md:flex md:justify-between md:pr-0 md:pl-16 md:py-0 lg:pl-24 lg:py-24 items-start md:w-1/2 lg:w-1/4').text
-                speedQ, speedV = 'Available speeds', provider_speed[16:]
+                speedQ, speedV = 'Available speeds', provider_speed[12:]
                 provider_details[speedQ] = speedV
 
                 provider_price = li.find(class_='text-gray-steel text-24 md:text-18 lg:text-28 leading-28 m-0').text
