@@ -10,6 +10,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 import time
 import urllib.parse
+
 app = FastAPI()
 
 Max_Retry = 2
@@ -29,16 +30,16 @@ app.add_middleware(
 )
 
 @app.get("/")
-async def scrape_website(state: str, cityname: str, primary: str, street_number: str, st: str, post_direction: str, zip_5: str, zip_9: str):
+async def scrape_website(state: str, cityname: str, primary: str, street_number: str, st: str, post_direction: str, zip_5: str):
     Retry_count= 0
     # these variables can be made from previous variable being mashed together
     state_cap = str.upper(state)
     cityname_cap = str.capitalize(cityname)
     street_name = f'{primary}%20{street_number}%20{st}%20{post_direction}'
-    zip_95 = f'{zip_5}-{zip_9}'
+    #zip_95 = f'{zip_5}-{zip_9}'
 
     # now everything gets packaged toghether
-    alconnect_url = f"https://www.allconnect.com/local/{state}/{cityname}?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&state={state_cap}&zip9={zip_95}&zip5={zip_5}&zip9or5={zip_95}&prettyAddress={primary}%20{street_number}%20{st}%20{post_direction}%2C%20{cityname_cap}%2C%20{state_cap}%20{zip_95}&zip={zip_95}"
+    alconnect_url = f"https://www.allconnect.com/local/{state}/{cityname}?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&state={state_cap}&zip5={zip_5}&prettyAddress={primary}%20{street_number}%20{st}%20{post_direction}%2C%20{cityname_cap}%2C%20{state_cap}%20{zip_5}&zip={zip_5}"
     print(alconnect_url)
     while Retry_count < Max_Retry:
         try:
