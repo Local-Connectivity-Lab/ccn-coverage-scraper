@@ -33,23 +33,22 @@ def scrape_website(state: str, cityname: str, primary: str, street_number: str, 
     street_name = f'{primary}%20{street_number}%20{st}%20{post_direction}'
     zip_95 = f'{zip_5}-{zip_9}'
 
+#"https://www.allconnect.com/local/{state}/{cityname}?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&state={state_cap}&zip9={zip_95}&zip5={zip_5}&zip9or5={zip_95}&prettyAddress={primary}%20{street_number}%20{st}%20{post_direction}%2C%20{cityname_cap}%2C%20{state_cap}%20{zip_95}&zip={zip_95}"
+    try:
     # now everything gets packaged together
-    alconnect_url = f"https://www.allconnect.com/local/{state}/{cityname}?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&state={state_cap}&zip9={zip_95}&zip5={zip_5}&zip9or5={zip_95}&prettyAddress={primary}%20{street_number}%20{st}%20{post_direction}%2C%20{cityname_cap}%2C%20{state_cap}%20{zip_95}&zip={zip_95}"
-    print("stage 1", alconnect_url)
-    wifi_providers = get_plans(alconnect_url, 'mb-16 last:mb-0')
-    print(wifi_providers)
-    if not wifi_providers or len(wifi_providers) == 0:
         # Modify alconnect_url for the next attempt
-        alconnect_url = f"https://www.allconnect.com/results/providers?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&state={state_cap}&zip9={zip_95}&zip5={zip_5}&zip9or5={zip_95}&prettyAddress={primary}%20{street_number}%20{st}%20{post_direction}%2C%20{cityname_cap}%2C%20{state_cap}%20{zip_95}&zip={zip_95}"
+        alconnect_url = f'https://www.allconnect.com/results/providers?zip={zip_5}'
         print("stage 2", alconnect_url)
         wifi_providers = get_plans(alconnect_url, 'mb-16 md:mb-24 last:mb-0')
-    return wifi_providers
+        return wifi_providers
+    except:
+        print("no work")
 def get_plans(alconnect_url: str, li_elementclass: str ) -> dict:
     # now everything gets packaged together
     wifi_providers = {}
     try:
             chrome_options = Options()
-            #chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--headless')
             driver = webdriver.Chrome(options=chrome_options)
 
             #this is all of the parameters that are being used to test the url
@@ -66,7 +65,7 @@ def get_plans(alconnect_url: str, li_elementclass: str ) -> dict:
 
             #selenium starts up and gets driver page source
             driver.get(alconnect_url)
-            time.sleep(5)
+            time.sleep(3)
             '''
             try:
                 # Wait until the element with class "mb-16" appears
