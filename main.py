@@ -25,13 +25,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 @app.get("/")
-def scrape_website(state: str, cityname: str, primary: str, street_number: str, st: str, post_direction: str, zip_5: str, zip_9: str):
+def scrape_website(state: str, cityname: str, primary: str, street_number: str, st: str, post_direction: str, zip_5: str):
 
     # these variables can be made from previous variable being mashed together
     state_cap = str.upper(state)
     cityname_cap = str.capitalize(cityname)
     street_name = f'{primary}%20{street_number}%20{st}%20{post_direction}'
-    zip_95 = f'{zip_5}-{zip_9}'
+    #zip_95 = f'{zip_5}-{zip_9}'
 
 #"https://www.allconnect.com/local/{state}/{cityname}?city={cityname_cap}&primary={primary}&street_line={street_name}&street={street_number}%20{st}&postDirection={post_direction}&state={state_cap}&zip9={zip_95}&zip5={zip_5}&zip9or5={zip_95}&prettyAddress={primary}%20{street_number}%20{st}%20{post_direction}%2C%20{cityname_cap}%2C%20{state_cap}%20{zip_95}&zip={zip_95}"
     try:
