@@ -39,7 +39,8 @@ def scrape_website(state: str, cityname: str, primary: str, street_number: str, 
         # Modify alconnect_url for the next attempt
         alconnect_url = f'https://www.allconnect.com/results/providers?zip={zip_5}'
         print("stage 2", alconnect_url)
-        wifi_providers = get_plans(alconnect_url, 'mb-16 md:mb-24 last:mb-0')
+        # wifi_providers = get_plans(alconnect_url, 'mb-16 md:mb-24 last:mb-0')
+        wifi_providers = get_plans(alconnect_url, 'mb-16 last:mb-0')
         return wifi_providers
     except:
         print("no work")
@@ -78,6 +79,8 @@ def get_plans(alconnect_url: str, li_elementclass: str ) -> dict:
             #beautiful soup finds the relevant data
             soup = BeautifulSoup(html_text, 'lxml')
             li_elements = soup.find_all('li', class_=li_elementclass)
+            if len(li_elements) == 0:
+                print("no prices found")
             scrap_data = '\n'.join([li.text for li in li_elements])
 
             # Extracting information for each provider and adding it to the dictionary
