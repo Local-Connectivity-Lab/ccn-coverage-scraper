@@ -1,16 +1,19 @@
-import traceback
+"""
+ccn-coverage-scraper
+"""
+#import traceback
 from fastapi import FastAPI, HTTPException
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
+#from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 from fastapi.middleware.cors import CORSMiddleware
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.by import By
+#from selenium.webdriver.support import expected_conditions as EC
+#from selenium.common.exceptions import TimeoutException
+#from selenium.webdriver.common.by import By
 import time
-import urllib.parse
+#import urllib.parse
 app = FastAPI()
 
 origins = [
@@ -106,10 +109,10 @@ def get_plans(alconnect_url: str, li_elementclass: str ) -> dict:
 
         # Printing the dictionary
     except requests.RequestException as e:
-        print(e, "1", traceback.format_exc())
+        #print(e, "1", traceback.format_exc())
         raise HTTPException(status_code=500, detail="Failed to fetch URL") from e
     except Exception as e:
-        print(e, "2", traceback.format_exc())
+        #print(e, "2", traceback.format_exc())
         raise HTTPException(status_code=500, detail="Failed to scrape website") from e
     finally:
         driver.quit()
