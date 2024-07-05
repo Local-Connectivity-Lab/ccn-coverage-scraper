@@ -5,6 +5,7 @@ beautifulsoup4==4.12.3
 bs4==0.0.2
 certifi==2024.2.2
 charset-normalizer==3.3.2
+click==8.1.7
 fastapi==0.110.1
 h11==0.14.0
 idna==3.6
@@ -23,4 +24,5 @@ trio==0.25.0
 trio-websocket==0.11.1
 typing_extensions==4.10.0
 urllib3==2.2.1
+uvicorn==0.30.1
 wsproto==1.2.0
