@@ -44,7 +44,8 @@ def scrape_website(state: str, cityname: str, primary: str, street_number: str, 
         alconnect_url = f'https://www.allconnect.com/results/providers?zip={zip_5}'
         print("stage 2", alconnect_url)
         # wifi_providers = get_plans(alconnect_url, 'mb-16 md:mb-24 last:mb-0')
-        wifi_providers = get_plans(alconnect_url, 'mb-16 last:mb-0')
+        wifi_providers = get_plans(alconnect_url, 'mb-16 md:mb-24 last:mb-0')
+        print(wifi_providers)
         return wifi_providers
     except:
         print("no work")
@@ -70,7 +71,7 @@ def get_plans(alconnect_url: str, li_elementclass: str ) -> dict:
 
             #selenium starts up and gets driver page source
             driver.get(alconnect_url)
-            time.sleep(3)
+            time.sleep(5)
             '''
             try:
                 # Wait until the element with class "mb-16" appears
@@ -83,25 +84,36 @@ def get_plans(alconnect_url: str, li_elementclass: str ) -> dict:
             #beautiful soup finds the relevant data
             soup = BeautifulSoup(html_text, 'lxml')
             li_elements = soup.find_all('li', class_=li_elementclass)
+            print('li_elements', li_elements)
             if len(li_elements) == 0:
                 print("no prices found")
             scrap_data = '\n'.join([li.text for li in li_elements])
+            print('scrap_data', scrap_data)
 
             # Extracting information for each provider and adding it to the dictionary
             for li in li_elements:
-                provider_name = li.find('span', class_='text-10 leading-10 md:ml-16 lg:ml-0 lg:mb-8')
+                provider_name = li.find(class_='text-center text-gray-steel text-12 leading-10 md:text-left md:text-10 mb-8 md:mt-8') #text-10 leading-10 md:ml-16 lg:ml-0 lg:mb-8
                 if provider_name:
                     provider_name = provider_name.text
                     print(provider_name)
                     provider_details = {}
 
                     provider_speed = li.find(
-                        class_='product__info-box relative border-b border-solid border-gray-bg-dark px-16 py-10 md:p-16 md:flex md:justify-between md:pr-0 md:pl-16 md:py-0 lg:pl-24 lg:py-24 items-start md:w-1/2 lg:w-1/4').text
+                        class_='flex justify-between items-center text-gray-steel text-14 leading-20 border-solid border-0 border-b border-t border-gray-heather-light md:border-0 py-6 md:py-0 first:border-0 first:py-0 last:border-0 last:py-0 mb-4 lg:w-244').text #product__info-box relative border-b border-solid border-gray-bg-dark px-16 py-10 md:p-16 md:flex md:justify-between md:pr-0 md:pl-16 md:py-0 lg:pl-24 lg:py-24 items-start md:w-1/2 lg:w-1/4
                     speedQ, speedV = 'Available speeds', provider_speed[12:]
                     provider_details[speedQ] = speedV
 
-                    provider_price = li.find(class_='text-gray-steel text-24 md:text-18 lg:text-28 leading-28 m-0').text
+                    provider_price = li.find(class_='flex items-start').text #text-gray-steel text-24 md:text-18 lg:text-28 leading-28 m-0
                     priceQ, priceV = 'Starting at', provider_price
+                    # processing price string to format 
+                    priceV = priceV.split("/")[0]
+                    if len(priceV) == 3:
+                        priceV += ".00"
+                    elif len(priceV) == 5:
+                        priceV = priceV[0:3] + "." + priceV[3:]
+                    else :
+                        print(priceV, "don't know price")
+                    priceV += "/mo"
                     provider_details[priceQ] = priceV
 
                     wifi_providers[provider_name] = provider_details
