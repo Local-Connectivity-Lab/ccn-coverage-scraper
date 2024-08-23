@@ -1,31 +1,25 @@
-# build
-FROM python:3.12-slim as build
+# Use the official Python base image
+FROM python:3.11
 
-RUN apt-get update
+# install chromium-driver and clean up
+RUN apt-get update && \
+    apt-get install -y chromium-driver && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y --no-install-recommends build-essential gcc
+# Set the working directory inside the container
+WORKDIR /app
 
-WORKDIR /usr/app
-
-RUN python -m venv /usr/app/venv
-
-ENV PATH="/usr/app/venv/bin:$PATH"
-
+# Copy the requirements file to the working directory
 COPY requirements.txt .
 
-RUN pip install -r requirements.txt
+# Install the Python dependencies
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
-
-# run
-FROM python:3.12-slim
-
-WORKDIR /usr/app
-
-COPY --from=build /usr/app/venv ./venv
-
+# Copy the application code to the working directory
 COPY . .
 
-ENV PATH="/usr/app/venv/bin:$PATH"
+# Expose the port on which the application will run
+EXPOSE 8000
 
-# python3 -m uvicorn main:app --reload
-CMD [ "python3", "-m", "uvicorn", "main:app", "--reload" ]
+# Run the FastAPI application using uvicorn server
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "debug"]
